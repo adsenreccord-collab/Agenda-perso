@@ -209,12 +209,12 @@ $('#fi').onchange=async e=>{const f=e.target.files[0],id=e.target.dataset.g;e.ta
 try{if(id=='_a'){arch(JSON.parse(await f.text()));SG();return}if(id=='_r'){const j=JSON.parse(await f.text());if(!Array.isArray(j.g)||!Array.isArray(j.e))throw 0;S=j;save();SG();R();return toast('Sauvegarde restaurée')}
 /\.ics$/i.test(f.name)?impE(id,ics(await f.text())):imp(id,/\.csv$/i.test(f.name)?[csv(await f.text())]:await xl(await f.arrayBuffer()))}catch(x){toast(x&&x.message||'Fichier invalide')}};
 function conf(){const by={},mn=s=>+s.slice(0,2)*60+ +s.slice(3,5),out=[];
-S.e.filter(e=>e.s).forEach(e=>(by[e.d]=by[e.d]||[]).push(e));
+S.e.forEach(e=>(by[e.d]=by[e.d]||[]).push(e));
 for(const d in by){let c=[],mx=0;const fl=()=>{if(c.length>1&&!c.every(e=>e.p)){const key=c.map(e=>e.id).sort().join('+');if(!(S.ok||[]).includes(key))out.push({d,es:c,key})}};
-for(const e of by[d].sort(srt)){const a=mn(e.s),b=e.e&&mn(e.e)>a?mn(e.e):a+60;if(c.length&&a<mx){c.push(e);mx=Math.max(mx,b)}else{fl();c=[e];mx=b}}fl()}
+for(const e of by[d].sort(srt)){const a=e.s?mn(e.s):0,b=e.s?(e.e&&mn(e.e)>a?mn(e.e):a+60):1440;if(c.length&&a<mx){c.push(e);mx=Math.max(mx,b)}else{fl();c=[e];mx=b}}fl()}
 return out.sort((x,y)=>x.d.localeCompare(y.d))}
 function delEv(l){S.dx=S.dx||[];l.forEach(e=>{if(e.x)S.dx.push(e.g+'|'+K(e))});S.e=S.e.filter(x=>!l.includes(x));save();R();CL()}
-function CL(){const cf=conf();$('#cl').innerHTML=(cf.length?cf.map(c=>`<div class="gr" data-k="${c.key}"><h3>${fmt(c.d)}</h3>${c.es.map(e=>`<div class="ev" style="--c:${col(e)}"><b>${e.s}–${e.e||'?'}</b><span>${esc(e.t)}</span><small>${esc(((S.g.find(g=>g.id==e.g)||{}).n||'')+(e.l?' – '+e.l:''))}</small><button data-a="k" data-i="${e.id}" style="grid-column:1/-1;margin-top:6px">Je participe à celui-ci</button></div>`).join('')}<button data-a="o" style="width:100%">Ignorer ce conflit</button></div>`).join(''):'<p class="mu">Aucun conflit.</p>')+((S.ok||[]).length?'<button data-a="z" style="width:100%;margin-top:8px">Réafficher les conflits ignorés ('+S.ok.length+')</button>':'')}
+function CL(){const cf=conf();$('#cl').innerHTML=(cf.length?cf.map(c=>`<div class="gr" data-k="${c.key}"><h3>${fmt(c.d)}</h3>${c.es.map(e=>`<div class="ev" style="--c:${col(e)}"><b>${e.s?e.s+'–'+(e.e||'?'):'Journée'}</b><span>${esc(e.t)}</span><small>${esc(((S.g.find(g=>g.id==e.g)||{}).n||'')+(e.l?' – '+e.l:''))}</small><button data-a="k" data-i="${e.id}" style="grid-column:1/-1;margin-top:6px">Je participe à celui-ci</button></div>`).join('')}<button data-a="o" style="width:100%">Ignorer ce conflit</button></div>`).join(''):'<p class="mu">Aucun conflit.</p>')+((S.ok||[]).length?'<button data-a="z" style="width:100%;margin-top:8px">Réafficher les conflits ignorés ('+S.ok.length+')</button>':'')}
 $('#cf').onclick=()=>{CL();$('#cd').showModal()};$('#cc').onclick=()=>$('#cd').close();
 $('#cl').onclick=e=>{const a=e.target.dataset.a;if(!a)return;if(a=='z'){S.ok=[];save();R();CL();return}const c=conf().find(c=>c.key==e.target.closest('[data-k]').dataset.k);if(!c)return;
 if(a=='o'){(S.ok=S.ok||[]).push(c.key);save();R();CL()}
