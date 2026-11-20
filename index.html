@@ -60,6 +60,8 @@ dialog{max-height:88dvh;overflow:auto;overscroll-behavior:contain}
 dialog{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 }
 [hidden]{display:none!important}
+.zr{display:flex;gap:6px;align-items:center;margin-bottom:6px}.zr button{min-height:36px;padding:2px 10px}
+.rt{border-collapse:collapse;width:100%;font-size:13px}.rt th,.rt td{border:1px solid var(--ln);padding:4px 6px;text-align:left}.rt th{background:var(--cd)}.rt tr.y td{background:#fff176;color:#1b2333}
 </style></head><body>
 <div class="bar"><button id="pv" aria-label="Mois précédent">‹</button><h1 id="ti"><select id="mo" aria-label="Mois"></select> <input type="number" id="yr" min="1900" max="2100" aria-label="Année"></h1><button id="nx" aria-label="Mois suivant">›</button>
 <button id="tdy">Aujourd’hui</button><nav class="tb"><button id="vw">Agenda</button><button id="pb">Présence</button><button id="cf">Conflits</button><button id="so">Sources</button><button id="ad" class="pr" aria-label="Ajouter">+</button></nav></div>
@@ -85,7 +87,26 @@ dialog{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;p
 <div class="r"><button id="bj">Sauvegarde</button><button id="bc">Export CSV</button><button id="br">Restaurer</button><button id="cs" class="pr">Fermer</button></div></div></dialog>
 <dialog id="cd"><div class="f"><h2>Conflits d’horaires</h2><p class="mu">Ces événements se chevauchent. Indiquez celui auquel vous participez : il passe en Présent et les autres en Absent. Rien n’est supprimé. Un conflit disparaît dès que la présence est renseignée sur tous ses événements.</p><div id="cl"></div><div class="r"><button id="cc" class="pr">Fermer</button></div></div></dialog>
 <dialog id="pd"><div class="f"><h2>Présence par groupe</h2><div class="r" id="pk"><button data-k="o">Objectifs</button><button data-k="m">Mois</button><button data-k="t">3 mois</button><button data-k="y">Année</button></div><p class="mu" id="pl"></p><div id="pc"></div>
-<p class="mu">Marquez Présent ou Absent sur chaque événement passé. Dans Sources, chaque groupe a ses objectifs (taux, nombre de présences) avec une date de début et de fin. Les périodes Mois, 3 mois et Année suivent le mois affiché et montrent les statistiques seules.</p><div class="r"><button id="px" class="pr">Fermer</button></div></div></dialog>
+<p class="mu">Marquez Présent ou Absent sur chaque événement passé. Dans Sources, chaque groupe a ses objectifs (taux, nombre de présences) avec une date de début et de fin. Les périodes Mois, 3 mois et Année suivent le mois affiché et montrent les statistiques seules.</p><div class="r"><button id="rp0">Rapport par e-mail</button><button id="zb">Rapport à envoyer</button><button id="px" class="pr">Fermer</button></div></div></dialog>
+<dialog id="rpd"><div class="f"><h2>Rapport de présence</h2>
+<div class="r"><label>Du<input type="date" id="rpb"></label><label>Au<input type="date" id="rpe"></label></div>
+<h3>Destinataires</h3><div id="rc"></div>
+<div class="r"><input id="rn" placeholder="Nom" aria-label="Nom"><input id="rm" type="email" placeholder="E-mail" aria-label="E-mail"></div>
+<div class="r"><input id="rw" type="tel" placeholder="WhatsApp (ex. 06 12 34 56 78)" aria-label="Numéro WhatsApp"><button id="rad" style="flex:0 0 auto">+ Ajouter</button></div>
+<p class="mu" id="rpn"></p><div id="rpv" style="margin-bottom:8px"></div>
+<div class="r"><button id="rps" class="pr">Ouvrir mon e-mail</button><button id="rpf">Joindre le fichier</button><button id="rpc">Copier avec le jaune</button><button id="rpw">WhatsApp</button></div>
+<p class="mu">Jaune : événement modifié depuis le dernier rapport envoyé. Le texte du mail ne peut pas être coloré : pour garder le jaune, joignez le fichier ou copiez puis collez dans le mail. WhatsApp ne permet pas la couleur : le texte porte 🟡 devant les lignes modifiées.</p>
+<div class="r"><button id="rpx">Fermer</button></div></div></dialog>
+<dialog id="zd"><div class="f"><h2>Rapport de présence</h2>
+<label>Groupe<select id="zg"></select></label>
+<div class="r"><label>Du<input type="date" id="zf"></label><label>Au<input type="date" id="zu"></label></div>
+<div class="r"><button id="zm">Mois affiché</button><button id="zo">Période d’objectif</button></div>
+<p class="mu" id="zs"></p>
+<div id="zv" style="overflow:auto;max-height:36vh;margin-bottom:8px"></div>
+<label style="display:flex;gap:8px;align-items:center;color:var(--fg)"><input type="checkbox" id="zk" checked style="width:auto;margin:0;min-height:0">Enregistrer ce rapport comme référence (au prochain rapport, les modifications seront en jaune)</label>
+<div class="r"><button id="ze" class="pr">E-mail</button><button id="zw">WhatsApp</button></div>
+<div class="r"><button id="zh">Partager le fichier</button><button id="zp">Imprimer / PDF</button></div>
+<div class="r"><button id="zr" class="dg">Oublier le rapport précédent</button><button id="zx">Fermer</button></div></div></dialog>
 <input type="file" id="fi" hidden><div id="to" hidden></div>
 <script>
 const $=s=>document.querySelector(s),p2=n=>String(n).padStart(2,'0'),uid=()=>Math.random().toString(36).slice(2,9),
@@ -229,6 +250,47 @@ $('#ba').onclick=()=>{const l=S.e.filter(e=>e.d<td);if(!l.length)return toast('A
 $('#bi').onclick=()=>{$('#fi').dataset.g='_a';$('#fi').accept='.json';$('#fi').click()};
 $('#pgb').onclick=()=>{const d=$('#pg').value;if(!d||d>=td)return toast('Choisissez une date passée');const l=S.e.filter(e=>e.d<d);if(!l.length)return toast('Aucun événement avant cette date');
 if(!confirm('Télécharger une archive puis supprimer '+l.length+' événement(s) antérieurs au '+fd(d)+' ?'))return;dl('planning_archive_avant_'+d+'.json',JSON.stringify(past(l)),'application/json');delEv(l);SG()};
+const PL={p:'Présent',a:'Absent','':'Non renseigné'},
+sig=e=>[e.s||'',e.e||'',e.t,e.l||'',e.p||''].join('|'),
+fd2=d=>d.split('-').reverse().join('/'),
+jr=d=>new Date(d+'T12:00').toLocaleDateString('fr-FR',{weekday:'short'}).replace('.',''),
+zg=()=>$('#zg').value,zname=()=>zg()=='all'?'Tous les groupes':((S.g.find(g=>g.id==zg())||{}).n||'');
+let ZP=null,ZE=null;
+function zrows(){const g=zg(),f=$('#zf').value,u=$('#zu').value;return S.e.filter(e=>(g=='all'||e.g==g)&&e.d>=f&&e.d<=u).sort(srt)}
+function zdata(){const ex=ZP?ZP.ev:{};return zrows().map(e=>{const k=ex[e.d];return{e,g:(S.g.find(x=>x.id==e.g)||{}).n||'',mod:!!(k&&k.length&&!k.includes(e.g+'|'+sig(e)))}})}
+function zsum(D){const p=D.filter(x=>x.e.p=='p').length,a=D.filter(x=>x.e.p=='a').length;return{p,a,n:D.length-p-a,t:p+a?Math.round(100*p/(p+a)):null}}
+function ztab(D){const al=zg()=='all';return'<table class="rt"><tr><th>Date</th><th>Horaire</th><th>Événement</th><th>Lieu</th>'+(al?'<th>Groupe</th>':'')+'<th>Présence</th></tr>'+D.map(x=>{const e=x.e;return'<tr'+(x.mod?' class="y"':'')+'><td>'+jr(e.d)+' '+fd2(e.d)+'</td><td>'+(e.s?e.s+(e.e?'–'+e.e:''):'Journée')+'</td><td>'+esc(e.t)+'</td><td>'+esc(e.l||'')+'</td>'+(al?'<td>'+esc(x.g)+'</td>':'')+'<td>'+PL[e.p||'']+(x.mod?' (modifié)':'')+'</td></tr>'}).join('')+'</table>'}
+function ztext(){const D=zdata(),s=zsum(D),al=zg()=='all';let t='RAPPORT DE PRÉSENCE\nGroupe : '+zname()+'\nPériode : du '+fd2($('#zf').value)+' au '+fd2($('#zu').value)+'\nPrésents : '+s.p+' | Absents : '+s.a+' | Non renseignés : '+s.n+(s.t==null?'':' | Taux : '+s.t+' %')+'\n\n';
+D.forEach(x=>{const e=x.e;t+=(x.mod?'🟡 ':'')+jr(e.d)+' '+fd2(e.d).slice(0,5)+' '+(e.s?e.s+(e.e?'-'+e.e:''):'journée')+' '+e.t+(e.l?' ('+e.l+')':'')+(al?' ['+x.g+']':'')+' : '+PL[e.p||'']+(x.mod?' (modifié)':'')+'\n'});
+if(!D.length)t+='Aucun événement sur cette période.\n';if(D.some(x=>x.mod))t+='\n🟡 = modifié depuis le rapport précédent\n';return t}
+function zdoc(){const D=zdata(),s=zsum(D);return'<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rapport de présence</title><style>body{font:14px/1.4 system-ui,sans-serif;margin:16px;color:#111;background:#fff}h1{font-size:18px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:5px 7px;text-align:left}th{background:#eee}tr.y td{background:#fff176;-webkit-print-color-adjust:exact;print-color-adjust:exact}</style><h1>Rapport de présence</h1><p>'+esc(zname())+' – du '+fd2($('#zf').value)+' au '+fd2($('#zu').value)+'<br>Présents : '+s.p+' | Absents : '+s.a+' | Non renseignés : '+s.n+(s.t==null?'':' | Taux : '+s.t+' %')+'</p>'+ztab(D)+'<p>Surligné en jaune : modifié depuis le rapport précédent.</p></html>'}
+function ZR(){const D=zdata(),s=zsum(D);$('#zv').innerHTML=D.length?'<p class="mu" style="margin:0 0 6px">'+s.p+' présent(s), '+s.a+' absent(s), '+s.n+' non renseigné(s)'+(s.t==null?'':', taux '+s.t+' %')+'</p>'+ztab(D):'<p class="mu">Aucun événement sur cette période.</p>';
+$('#zs').textContent=ZP?'Dernier rapport enregistré le '+new Date(ZP.t).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+' : les lignes modifiées depuis sont en jaune.':'Aucun rapport précédent enregistré pour ce choix : rien n’est surligné.'}
+function ZL(){ZP=(S.rp||{})[zg()]||null}
+function zpersist(){S.zs={g:zg(),f:$('#zf').value,u:$('#zu').value};save()}
+function ZO(){$('#zg').innerHTML='<option value="all">Tous les groupes</option>'+S.g.map(g=>'<option value="'+g.id+'">'+esc(g.n)+'</option>').join('');
+const z=S.zs||{};$('#zg').value=z.g||'all';if(!$('#zg').value)$('#zg').value='all';
+$('#zf').value=z.f||iso(new Date(y,m,1));$('#zu').value=z.u||iso(new Date(y,m+1,0));ZL();ZR()}
+function zok(){const f=$('#zf').value,u=$('#zu').value;if(!f||!u||f>u){toast('Choisissez une période valide (du … au …)');return false}return true}
+function zstore(){const k=zg(),f=$('#zf').value,u=$('#zu').value,old=(S.rp&&S.rp[k])?{...S.rp[k].ev}:{};
+for(const d in old)if(d>=f&&d<=u)delete old[d];zrows().forEach(e=>(old[e.d]=old[e.d]||[]).push(e.g+'|'+sig(e)));(S.rp=S.rp||{})[k]={t:Date.now(),ev:old};save()}
+const zsave=()=>{if($('#zk').checked)zstore()};
+function zmail(){const to=[];
+const sub='Rapport de présence – '+zname()+' – du '+fd2($('#zf').value)+' au '+fd2($('#zu').value),body=ztext(),q=b=>'mailto:'+to.join(',')+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(b);let u=q(body);
+if(u.length>1900){try{navigator.clipboard.writeText(body)}catch(e){}u=q('(Rapport copié : collez-le ici.)');toast('Rapport long : copié, collez-le dans le message')}return u}
+function zwn(n){const d=n.replace(/\D/g,'');if(/^\s*\+/.test(n))return d;if(d.startsWith('00'))return d.slice(2);if(d.startsWith('0'))return'33'+d.slice(1);return d}
+function zwa(){return'https://wa.me/?text='+encodeURIComponent(ztext())}
+$('#zb').onclick=()=>{ZO();$('#zd').showModal()};$('#zx').onclick=()=>$('#zd').close();
+$('#zg').onchange=()=>{ZL();zpersist();ZR()};$('#zf').onchange=$('#zu').onchange=()=>{zpersist();ZR()};
+$('#zm').onclick=()=>{$('#zf').value=iso(new Date(y,m,1));$('#zu').value=iso(new Date(y,m+1,0));zpersist();ZR()};
+$('#zo').onclick=()=>{const g=S.g.find(x=>x.id==zg());if(!g||!g.a||!g.b)return toast('Choisissez un groupe qui a une période d’objectif (Sources)');$('#zf').value=g.a;$('#zu').value=g.b;zpersist();ZR()};
+$('#ze').onclick=()=>{if(!zok())return;const u=zmail();if(!u)return;zsave();location.href=u};
+$('#zw').onclick=()=>{if(!zok())return;const u=zwa();zsave();if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))location.href=u.replace('https://wa.me/','whatsapp://send');else window.open(u,'_blank')};
+$('#zh').onclick=async()=>{if(!zok())return;const n='rapport_presence_'+zname().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w]+/g,'_')+'_'+$('#zf').value+'_'+$('#zu').value+'.html',h=zdoc();zsave();
+try{const fl=new File([h],n,{type:'text/html'});if(navigator.canShare&&navigator.canShare({files:[fl]})){await navigator.share({files:[fl],title:'Rapport de présence'});return}}catch(e){if(e&&e.name=='AbortError')return}dl(n,h,'text/html')};
+$('#zp').onclick=()=>{if(!zok())return;const w=window.open('','_blank');if(!w)return toast('Autorisez les fenêtres pop-up');zsave();w.document.write(zdoc());w.document.close();w.focus();setTimeout(()=>w.print(),400)};
+$('#zr').onclick=()=>{if(S.rp&&S.rp[zg()]&&confirm('Oublier le rapport précédent pour ce choix ?')){delete S.rp[zg()];save();ZL();ZR()}};
+
 let PK='o';
 function per(k){let a,b,nm;if(k=='m'){a=new Date(y,m,1);b=new Date(y,m+1,0);nm=1}else if(k=='t'){a=new Date(y,m-2,1);b=new Date(y,m+1,0);nm=3}else{a=new Date(y,0,1);b=new Date(y,11,31);nm=12}return{a:iso(a),b:iso(b),nm}}
 function stats(id,a,b){const r={p:0,a:0,pa:0,fu:0,n:0};S.e.filter(e=>e.g==id&&e.d>=a&&e.d<=b).forEach(e=>{r.n++;if(e.p=='p')r.p++;else if(e.p=='a')r.a++;else if(e.d<td)r.pa++;else r.fu++});return r}
@@ -246,12 +308,53 @@ if(ob&&t&&s.p+s.a+s.fu){const need=Math.ceil(t/100*(s.p+s.a+s.fu)-1e-9)-s.p,l=la
 if(ob&&mm){const r=mm-s.p,l=lab(r);h+=`<p class="${l[1]}" style="margin:6px 0 0">Présences : ${s.p} / ${mm} (${l[0]||'reste '+r})</p>`}
 return h+'</div>'}).join('')||'<p class="mu">Aucun objectif défini, ou aucun événement sur cette période.</p>'}
 $('#pb').onclick=()=>{PA();$('#pd').showModal()};$('#px').onclick=()=>$('#pd').close();$('#pk').onclick=e=>{if(e.target.dataset.k){PK=e.target.dataset.k;PA()}};
+const RL={d:'Date',s:'Début',e:'Fin',t:'Titre',l:'Lieu',p:'Présence',g:'Groupe'};let RB={};
+const rsnap=e=>({d:e.d,s:e.s||'',e:e.e||'',t:e.t,l:e.l||'',p:e.p||'',g:e.g}),rpv=v=>v=='p'?'Présent':v=='a'?'Absent':'Non renseigné',rgn=id=>(S.g.find(g=>g.id==id)||{}).n||'',
+rlab=e=>e.s?e.s+(e.e?'–'+e.e:''):'Journée';
+function rchg(o,e){const n=rsnap(e);return Object.keys(RL).filter(k=>o[k]!=n[k]).map(k=>{const f=v=>k=='p'?rpv(v):k=='g'?rgn(v):k=='d'?fd(v):(v||'—');return RL[k]+' : '+f(o[k])+' → '+f(n[k])})}
+function rrows(a,b){return S.e.filter(e=>e.d>=a&&e.d<=b).sort(srt).map(e=>({e,c:RB[e.id]?rchg(RB[e.id],e):[]}))}
+function rhtml(a,b,rows){const th='style="border:1px solid #bbb;padding:4px 6px;background:#eee;text-align:left"',cs=y=>`style="border:1px solid #bbb;padding:4px 6px;vertical-align:top${y?';background:#fff176':''}"`,m={};
+rows.forEach(({e})=>{const g=m[e.g]=m[e.g]||{p:0,a:0,n:0};e.p=='p'?g.p++:e.p=='a'?g.a++:g.n++});
+let h=`<div style="font-family:Arial,sans-serif;font-size:14px;color:#111"><h2 style="margin:0 0 4px">Rapport de présence</h2><p style="margin:0 0 10px;color:#555">Du ${fd(a)} au ${fd(b)}, généré le ${fd(td)}</p>`;
+h+=`<table style="border-collapse:collapse;margin-bottom:12px"><tr><th ${th}>Groupe</th><th ${th}>Présent</th><th ${th}>Absent</th><th ${th}>Non renseigné</th><th ${th}>Taux</th></tr>`+Object.entries(m).map(([id,x])=>`<tr><td ${cs()}>${esc(rgn(id))}</td><td ${cs()}>${x.p}</td><td ${cs()}>${x.a}</td><td ${cs()}>${x.n}</td><td ${cs()}>${x.p+x.a?Math.round(100*x.p/(x.p+x.a))+' %':'–'}</td></tr>`).join('')+'</table>';
+h+=`<table style="border-collapse:collapse"><tr><th ${th}>Date</th><th ${th}>Horaire</th><th ${th}>Événement</th><th ${th}>Groupe</th><th ${th}>Lieu</th><th ${th}>Présence</th><th ${th}>Modification</th></tr>`+
+rows.map(({e,c})=>{const y=c.length,s=cs(y),pc=e.p=='p'?'#1b7f3b':e.p=='a'?'#c92a2a':'#666';return`<tr><td ${s}>${fd(e.d)}</td><td ${s}>${rlab(e)}</td><td ${s}>${esc(e.t)}</td><td ${s}>${esc(rgn(e.g))}</td><td ${s}>${esc(e.l||'')}</td><td ${s}><b style="color:${pc}">${rpv(e.p)}</b></td><td ${s}>${c.map(esc).join('<br>')}</td></tr>`}).join('')+'</table></div>';return h}
+function rtext(a,b,rows){return'Rapport de présence du '+fd(a)+' au '+fd(b)+'\n\n'+rows.map(({e,c})=>fd(e.d)+' | '+rlab(e)+' | '+e.t+' | '+rgn(e.g)+(e.l?' | '+e.l:'')+' | '+rpv(e.p)+(c.length?'  ** MODIFIÉ ('+c.join(' ; ')+') **':'')).join('\n')}
+function RP(){const a=$('#rpb').value,b=$('#rpe').value;if(!a||!b||b<a){$('#rpv').innerHTML='<p class="mu">Choisissez une période valide.</p>';$('#rpn').textContent='';return null}
+const rows=rrows(a,b);$('#rpv').innerHTML='<div style="background:#fff;color:#111;padding:8px;border-radius:8px;overflow-x:auto">'+rhtml(a,b,rows)+'</div>';
+$('#rpn').textContent=rows.length+' événement(s), '+rows.filter(r=>r.c.length).length+' modifié(s) depuis le précédent rapport (en jaune).';return{a,b,rows}}
+function rmark(rows){S.rp=S.rp||{};rows.forEach(({e})=>S.rp[e.id]=rsnap(e));save()}
+$('#rp0').onclick=()=>{const q=per('m');$('#rpb').value=q.a;$('#rpe').value=q.b;if(S.mail){if(!(S.ab||[]).some(c=>c.m==S.mail))(S.ab=S.ab||[]).push({id:uid(),n:S.mail,m:S.mail,t:'',s:true});S.mail='';save()}RCd();RB=JSON.parse(JSON.stringify(S.rp||{}));RP();$('#rpd').showModal()};
+$('#rpb').onchange=$('#rpe').onchange=RP;
+$('#rpx').onclick=()=>$('#rpd').close();
+$('#rps').onclick=()=>{const r=RP();if(!r)return;let t=rtext(r.a,r.b,r.rows);if(t.length>1500)t=t.slice(0,1500)+'\n… (suite tronquée : utilisez « Joindre le fichier » ou « Copier avec le jaune »)';rmark(r.rows);
+go('mailto:'+rto()+'?subject='+encodeURIComponent('Rapport de présence du '+fd(r.a)+' au '+fd(r.b))+'&body='+encodeURIComponent(t))};
+$('#rpf').onclick=()=>{const r=RP();if(!r)return;rmark(r.rows);const n='rapport_presence_'+r.a+'_'+r.b+'.html',h='<!doctype html><html lang="fr"><meta charset="utf-8"><title>Rapport de présence</title><body>'+rhtml(r.a,r.b,r.rows)+'</body></html>',f=new File([h],n,{type:'text/html'});
+if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Rapport de présence du '+fd(r.a)+' au '+fd(r.b),text:'Rapport de présence'}).catch(()=>{});else dl(n,h,'text/html')};
+$('#rpc').onclick=async()=>{const r=RP();if(!r)return;rmark(r.rows);const h=rhtml(r.a,r.b,r.rows),t=rtext(r.a,r.b,r.rows);
+try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([h],{type:'text/html'}),'text/plain':new Blob([t],{type:'text/plain'})})]);toast('Rapport copié : collez-le dans votre e-mail')}
+catch(e){try{await navigator.clipboard.writeText(t);toast('Texte copié (sans le jaune)')}catch(x){toast('Copie impossible')}}};
+
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 const sm=HTMLDialogElement.prototype.showModal;
-HTMLDialogElement.prototype.showModal=function(){sm.call(this);history.pushState({dlg:1},'');this.addEventListener('close',()=>{if(history.state&&history.state.dlg)history.back()},{once:true})};
-addEventListener('popstate',()=>{const d=document.querySelector('dialog[open]');if(d)d.close()});
+let skip=0;HTMLDialogElement.prototype.showModal=function(){sm.call(this);history.pushState({dlg:1},'');this.addEventListener('close',()=>{if(this.dataset.p){delete this.dataset.p;return}skip++;history.back()},{once:true})};
+addEventListener('popstate',()=>{if(skip>0){skip--;return}const o=document.querySelectorAll('dialog[open]');if(o.length){const d=o[o.length-1];d.dataset.p=1;d.close()}});
 let ip;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('#in').hidden=0});
 $('#in').onclick=()=>{if(ip){ip.prompt();ip=null;$('#in').hidden=1}};
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+let go=(u,w)=>{w?window.open(u,'_blank'):location.href=u};
+const rto=()=>(S.ab||[]).filter(c=>c.s&&c.m).map(c=>c.m).join(',');
+function RCd(){const A=S.ab||[];$('#rc').innerHTML=A.length?A.map(c=>`<div class="r" style="align-items:center;margin-bottom:4px" data-c="${c.id}"><label style="flex:1;margin:0;color:var(--fg);display:flex;gap:8px;align-items:center"><input type="checkbox" ${c.s?'checked':''} style="width:auto;min-height:0"><span>${esc(c.n)}<br><small class="mu">${esc([c.m,c.t&&'WhatsApp '+c.t].filter(Boolean).join(' – '))}</small></span></label><button data-x class="dg" aria-label="Supprimer" style="flex:0 0 auto">×</button></div>`).join(''):'<p class="mu">Répertoire vide : ajoutez une adresse ci-dessous.</p>'}
+$('#rc').onchange=e=>{const c=(S.ab||[]).find(x=>x.id==e.target.closest('[data-c]').dataset.c);if(c){c.s=e.target.checked;save()}};
+$('#rc').onclick=e=>{if(e.target.dataset.x===undefined)return;const i=e.target.closest('[data-c]').dataset.c,c=(S.ab||[]).find(x=>x.id==i);if(c&&confirm('Retirer '+c.n+' du répertoire ?')){S.ab=S.ab.filter(x=>x!=c);save();RCd()}};
+$('#rad').onclick=()=>{const n=$('#rn').value.trim(),mm=$('#rm').value.trim();let t=$('#rw').value.replace(/\D/g,'');
+if(!mm&&!t)return toast('Saisissez une adresse e-mail ou un numéro');if(mm&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mm))return toast('Adresse e-mail invalide');
+if(t.startsWith('00'))t=t.slice(2);else if(t.startsWith('0'))t='33'+t.slice(1);
+(S.ab=S.ab||[]).push({id:uid(),n:n||mm||t,m:mm,t,s:true});save();$('#rn').value=$('#rm').value=$('#rw').value='';RCd()};
+function rwtext(a,b,rows){const m={};rows.forEach(({e})=>{const g=m[e.g]=m[e.g]||{p:0,a:0};if(e.p=='p')g.p++;else if(e.p=='a')g.a++});
+return'Rapport de présence du '+fd(a)+' au '+fd(b)+'\n\n'+Object.entries(m).map(([id,x])=>rgn(id)+' : '+x.p+' présent, '+x.a+' absent'+(x.p+x.a?' ('+Math.round(100*x.p/(x.p+x.a))+' %)':'')).join('\n')+'\n\n'+rows.map(({e,c})=>(c.length?'🟡 ':'')+fd(e.d)+' '+rlab(e)+' – '+e.t+' ('+rgn(e.g)+') : '+rpv(e.p)+(c.length?' [modifié : '+c.join(' ; ')+']':'')).join('\n')}
+$('#rpw').onclick=()=>{const r=RP();if(!r)return;const ph=(S.ab||[]).filter(c=>c.s&&c.t).map(c=>c.t);rmark(r.rows);
+if(ph.length>1)toast('Plusieurs destinataires : choisissez-les dans WhatsApp');go('https://wa.me/'+(ph.length==1?ph[0]:'')+'?text='+encodeURIComponent(rwtext(r.a,r.b,r.rows)),1)};
+
 R();
 </script></body></html>
