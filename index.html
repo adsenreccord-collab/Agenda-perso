@@ -105,7 +105,7 @@ dialog{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;p
 <div id="zv" style="overflow:auto;max-height:36vh;margin-bottom:8px"></div>
 <label style="display:flex;gap:8px;align-items:center;color:var(--fg)"><input type="checkbox" id="zk" checked style="width:auto;margin:0;min-height:0">Enregistrer ce rapport comme référence (au prochain rapport, les modifications seront en jaune)</label>
 <div class="r"><button id="ze" class="pr">E-mail</button><button id="zw">WhatsApp</button></div>
-<div class="r"><button id="zh">Partager le fichier</button><button id="zp">Imprimer / PDF</button></div>
+<div class="r"><button id="zh">Partager en Excel</button><button id="zp">Partager en PDF</button><button id="zi">Imprimer</button></div>
 <div class="r"><button id="zr" class="dg">Oublier le rapport précédent</button><button id="zx">Fermer</button></div></div></dialog>
 <input type="file" id="fi" hidden><div id="to" hidden></div>
 <script>
@@ -119,7 +119,7 @@ let S,V='m',ce=null,tm,CFS=new Set();
 try{S=JSON.parse(localStorage.pl1)}catch(e){}
 const NEW=['Perso','RDV','Agen orchestra','Union musical néracaise','Garonne brass band','Shoun brass','Jimbalaya','A bisto de nas'],COL=['#f08c00','#e03131','#3b6cf6','#e8590c','#2f9e44','#ae3ec9','#0c8599','#d6336c'];
 if(!S||!S.g)S={v:2,g:NEW.map((n,i)=>({id:'g'+(i+1),n,c:COL[i],u:''})),e:[],h:[]};
-const save=()=>{try{localStorage.pl1=JSON.stringify(S)}catch(e){}},
+const save=()=>{try{localStorage.pl1=JSON.stringify(S)}catch(e){}pushP()},
 toast=t=>{const o=$('#to');o.textContent=t;o.hidden=0;clearTimeout(tm);tm=setTimeout(()=>o.hidden=1,3500)};
 if(S.v!=2){const MP={'Groupe 1':NEW[2],'Groupe 2':NEW[3],'Groupe 3':NEW[4],'Groupe 4':NEW[5],'Groupe 5':NEW[6],'Médical':NEW[1],'UMN':NEW[3],'GBB':NEW[4]};
 S.g.forEach(g=>{if(MP[g.n])g.n=MP[g.n]});NEW.forEach((n,i)=>{if(!S.g.some(g=>g.n==n))S.g.push({id:'g'+uid(),n,c:COL[i],u:''})});
@@ -165,11 +165,11 @@ for(let i=0;i<2400&&out.length<800;i++){const x=f=='d'?new Date(a,b,n+i):f=='w'?
 $('#ds').onclick=()=>{const l=S.e.filter(x=>x.r==ce.r);if(!confirm('Supprimer les '+l.length+' événements de la série ?'))return;delEv(l);$('#ed').close()};
 function dr(a,b){const c=new Date(a+'T12:00'),out=[];for(let i=0;i<366;i++){const k=iso(new Date(c.getFullYear(),c.getMonth(),c.getDate()+i));if(k>b)break;out.push(k)}return out}
 $('#edf').onchange=()=>{$('#er').disabled=!!$('#edf').value};
-function SG(){$('#kp').checked=S.kp!==false;$('#pn2').textContent=S.e.filter(e=>e.d<td).length+' événement(s) passé(s) enregistré(s) dans l’application.';$('#gl').innerHTML=S.g.map(g=>`<div class="gr" data-g="${g.id}"><div class="r"><input type="color" value="${g.c}" data-f="c" aria-label="Couleur"><input value="${esc(g.n)}" data-f="n" aria-label="Nom"><button data-a="f">Fichier</button></div><div class="r"><input value="${esc(g.u||'')}" placeholder="Lien Google Sheet ou Agenda (iCal)" data-f="u" aria-label="Lien"><button data-a="s">Sync</button><button data-a="x" class="dg" aria-label="Supprimer la source">×</button></div><div class="r"><label>Objectif présence (%)<input type="number" min="0" max="100" value="${g.o||''}" data-f="o"></label><label>Présences minimum<input type="number" min="0" value="${g.m||''}" data-f="m"></label></div><div class="r"><label>Début de l’objectif<input type="date" value="${g.a||''}" data-f="a"></label><label>Fin de l’objectif<input type="date" value="${g.b||''}" data-f="b"></label></div></div>`).join('')}
+function SG(){$('#kp').checked=S.kp!==false;$('#pn2').textContent=S.e.filter(e=>e.d<td).length+' événement(s) passé(s) enregistré(s) dans l’application.';$('#gl').innerHTML=S.g.map(g=>`<div class="gr" data-g="${g.id}"><div class="r"><input type="color" value="${g.c}" data-f="c" aria-label="Couleur"><input value="${esc(g.n)}" data-f="n" aria-label="Nom"><button data-a="f">Fichier</button></div><div class="r"><input value="${esc(g.u||'')}" placeholder="Lien Google Sheet ou Agenda (iCal)" data-f="u" aria-label="Lien"><button data-a="s">Sync</button><button data-a="x" class="dg" aria-label="Supprimer la source">×</button></div><div class="r"><label>Objectif présence (%)<input type="number" min="0" max="100" value="${g.o||''}" data-f="o"></label><label>Présences minimum<input type="number" min="0" value="${g.m||''}" data-f="m"></label></div><div class="r"><label>Début de l’objectif<input type="date" value="${g.a||''}" data-f="a"></label><label>Fin de l’objectif<input type="date" value="${g.b||''}" data-f="b"></label></div><div class="r"><input value="${esc(g.w||'')}" placeholder="Lien d’envoi des présences (Google Apps Script)" data-f="w" aria-label="Lien d’envoi"><input value="${esc(g.k||'')}" placeholder="Code" data-f="k" style="max-width:90px" aria-label="Code secret"><button data-a="w">Tout envoyer</button></div></div>`).join('')}
 $('#so').onclick=()=>{SG();$('#sd').showModal()};$('#cs').onclick=()=>{$('#sd').close();R()};
 $('#gl').oninput=e=>{const f=e.target.dataset.f;if(!f)return;S.g.find(g=>g.id==e.target.closest('[data-g]').dataset.g)[f]=e.target.value;save()};
 $('#gl').onclick=e=>{const a=e.target.dataset.a;if(!a)return;const id=e.target.closest('[data-g]').dataset.g;
-if(a=='f'){$('#fi').dataset.g=id;$('#fi').accept='.xlsx,.xls,.xlsm,.csv,.ics,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/calendar';$('#fi').click()}else if(a=='x'){const g=S.g.find(g=>g.id==id);if(confirm('Supprimer « '+g.n+' » et ses événements ?')){S.g=S.g.filter(x=>x!=g);S.e=S.e.filter(e=>e.g!=id);save();SG();R()}}else sync(id)};
+if(a=='f'){$('#fi').dataset.g=id;$('#fi').accept='.xlsx,.xls,.xlsm,.csv,.ics,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/calendar';$('#fi').click()}else if(a=='x'){const g=S.g.find(g=>g.id==id);if(confirm('Supprimer « '+g.n+' » et ses événements ?')){S.g=S.g.filter(x=>x!=g);S.e=S.e.filter(e=>e.g!=id);save();SG();R()}}else if(a=='w'){const g=S.g.find(x=>x.id==id);if(!g.w){e.target.textContent='Lien manquant';return}const l=S.e.filter(x=>x.g==id&&x.p);l.forEach((x,i)=>setTimeout(()=>sendP(g,x),i*400));e.target.textContent='Envoyé ('+l.length+')'}else sync(id)};
 $('#ag').onclick=()=>{const c=['#3b6cf6','#e8590c','#2f9e44','#ae3ec9','#0c8599','#e03131','#f08c00','#d6336c'];S.g.push({id:'g'+uid(),n:'Nouvelle source',c:c[S.g.length%8],u:''});save();SG();R()};
 function csv(t){const sp=t.split('\n')[0],sep=(sp.match(/;/g)||[]).length>(sp.match(/,/g)||[]).length?';':',',r=[];let a=[],c='',q=0;
 for(let i=0;i<t.length;i++){const h=t[i];if(q){if(h=='"'){if(t[i+1]=='"'){c+='"';i++}else q=0}else c+=h}
@@ -183,18 +183,20 @@ if(/^\d{5}(\.\d+)?$/.test(v))return new Date(Date.UTC(1899,11,30)+Math.floor(v)*
 function pt(v){const k=String(v||'').match(/(\d{1,2})\s*[:hH]\s*(\d{2})?/);if(!k)return'';const r=p2(k[1])+':'+(k[2]||'00');return r=='00:00'?'':r}
 function parse(rows){let hi=-1,mp={d:0,t:1};
 for(let i=0;i<Math.min(rows.length,10);i++){const q={};rows[i].forEach((c,j)=>{const h=String(c).toLowerCase();
-if(/fin|end/.test(h))q.e=q.e??j;else if(/date|jour|day/.test(h))q.d=q.d??j;else if(/d[ée]but|start|heure|horaire/.test(h))q.s=q.s??j;
+if(/pr[ée]sen|statut|particip|dispo/.test(h))q.p=q.p??j;else if(/fin|end/.test(h))q.e=q.e??j;else if(/date|jour|day/.test(h))q.d=q.d??j;else if(/d[ée]but|start|heure|horaire/.test(h))q.s=q.s??j;
 else if(/titre|objet|v[ée]nement|title|activit|nom|motif|sujet|description/.test(h))q.t=q.t??j;
 else if(/lieu|place|location|salle|adresse/.test(h))q.l=q.l??j;else if(/note|comm|remarque/.test(h))q.o=q.o??j});
 if(q.d!=null&&q.t!=null){hi=i;mp=q;break}}
 const out=[];for(const r of rows.slice(hi+1)){const d=pd(r[mp.d]);if(!d)continue;const tx=k=>mp[k]==null?'':String(r[mp[k]]||'').trim();
-out.push({d,s:pt(mp.s!=null?r[mp.s]:r[mp.d]),e:pt(r[mp.e]),t:tx('t')||'(sans titre)',l:tx('l'),o:tx('o')})}return out}
+const ev={d,s:pt(mp.s!=null?r[mp.s]:r[mp.d]),e:pt(r[mp.e]),t:tx('t')||'(sans titre)',l:tx('l'),o:tx('o')};if(mp.p!=null){const p=pp(r[mp.p]);if(p)ev.p=p}out.push(ev)}return out}
+function pp(v){const t=String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();if(/^(present|presente|oui|o|yes|y|x|ok|vrai|true|1|✓|✔)$/.test(t))return'p';if(/^(absent|absente|non|n|no|faux|false|0|✗|✘)$/.test(t))return'a';return''}
 const K=e=>[e.d,e.s,e.t.toLowerCase()].join('|');
 function imp(id,sheets){impE(id,sheets.flatMap(parse))}
 function impE(id,evs){if(!evs.length)return toast('Aucune date reconnue : vérifiez les colonnes Date et Titre');
 const keep=S.e.filter(e=>!(e.g==id&&e.x&&(S.kp===false||e.d>=td))),ks=new Set(keep.filter(e=>e.g==id).map(K));
 const nw=evs.filter(e=>{const k=K(e);if(ks.has(k)||(S.dx||[]).includes(id+'|'+k))return 0;ks.add(k);return 1}).map(e=>({...e,id:uid(),g:id,x:1}));
-S.e=keep.concat(nw);save();R();const n=conf().length;toast(nw.length+' événement(s) importé(s)'+(n?' – '+n+' conflit(s) à vérifier':''))}
+const bk=new Map(keep.filter(e=>e.g==id).map(e=>[K(e),e]));let up=0;evs.forEach(e=>{if(e.p){const o=bk.get(K(e));if(o&&o.p!=e.p){o.p=e.p;up++}}});
+S.e=keep.concat(nw);lps();save();R();const n=conf().length,np=nw.filter(e=>e.p).length+up;toast(nw.length+' événement(s) importé(s)'+(np?' – '+np+' présence(s) reprise(s) de la feuille':'')+(n?' – '+n+' conflit(s) à vérifier':''))}
 async function sync(id){const g=S.g.find(g=>g.id==id);let u=(g.u||'').trim();if(!u)return toast('Collez d’abord un lien');
 const k=u.match(/spreadsheets\/d\/([\w-]+)/);if(k&&!/output=csv|gviz/.test(u)){const gid=(u.match(/gid=(\d+)/)||[])[1];u='https://docs.google.com/spreadsheets/d/'+k[1]+'/gviz/tq?tqx=out:csv'+(gid?'&gid='+gid:'')}
 u=u.replace(/^webcal:/i,'https:');try{const r=await fetch(u);if(!r.ok)throw 0;const t=await r.text();/^BEGIN:VCALENDAR/m.test(t)?impE(id,ics(t)):imp(id,[csv(t)])}catch(e){toast('Lecture impossible (accès bloqué ou lien non partagé) : importez le fichier .csv ou .ics')}}
@@ -286,9 +288,50 @@ $('#zm').onclick=()=>{$('#zf').value=iso(new Date(y,m,1));$('#zu').value=iso(new
 $('#zo').onclick=()=>{const g=S.g.find(x=>x.id==zg());if(!g||!g.a||!g.b)return toast('Choisissez un groupe qui a une période d’objectif (Sources)');$('#zf').value=g.a;$('#zu').value=g.b;zpersist();ZR()};
 $('#ze').onclick=()=>{if(!zok())return;const u=zmail();if(!u)return;zsave();location.href=u};
 $('#zw').onclick=()=>{if(!zok())return;const u=zwa();zsave();if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))location.href=u.replace('https://wa.me/','whatsapp://send');else window.open(u,'_blank')};
-$('#zh').onclick=async()=>{if(!zok())return;const n='rapport_presence_'+zname().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w]+/g,'_')+'_'+$('#zf').value+'_'+$('#zu').value+'.html',h=zdoc();zsave();
-try{const fl=new File([h],n,{type:'text/html'});if(navigator.canShare&&navigator.canShare({files:[fl]})){await navigator.share({files:[fl],title:'Rapport de présence'});return}}catch(e){if(e&&e.name=='AbortError')return}dl(n,h,'text/html')};
-$('#zp').onclick=()=>{if(!zok())return;const w=window.open('','_blank');if(!w)return toast('Autorisez les fenêtres pop-up');zsave();w.document.write(zdoc());w.document.close();w.focus();setTimeout(()=>w.print(),400)};
+$('#zi').onclick=()=>{if(!zok())return;const w=window.open('','_blank');if(!w)return toast('Autorisez les fenêtres pop-up');zsave();w.document.write(zdoc());w.document.close();w.focus();setTimeout(()=>w.print(),400)};
+function zcrc(b){let c=-1;for(let i=0;i<b.length;i++){c^=b[i];for(let k=0;k<8;k++)c=(c>>>1)^(0xEDB88320&-(c&1))}return(c^-1)>>>0}
+function zzip(files){const te=new TextEncoder(),u16=v=>[v&255,v>>8&255],u32=v=>[v&255,v>>8&255,v>>16&255,v>>24&255],loc=[],cen=[];let off=0;
+files.forEach(([n,t])=>{const nb=te.encode(n),d=te.encode(t),c=zcrc(d),h=[0x50,0x4b,3,4,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(d.length),...u32(d.length),...u16(nb.length),...u16(0),...nb];
+cen.push([0x50,0x4b,1,2,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(d.length),...u32(d.length),...u16(nb.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off),...nb]);
+loc.push(h,d);off+=h.length+d.length});
+const cd=[].concat(...cen),end=[0x50,0x4b,5,6,...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(cd.length),...u32(off),...u16(0)],parts=[...loc,cd,end],o=new Uint8Array(parts.reduce((a,p)=>a+p.length,0));let q=0;parts.forEach(p=>{o.set(p,q);q+=p.length});return o}
+const zx=s=>String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
+zhr=e=>e.s?e.s+(e.e?'–'+e.e:''):'Journée',
+zvals=(x,al)=>{const e=x.e;return[jr(e.d)+' '+fd2(e.d),zhr(e),e.t,e.l||''].concat(al?[x.g]:[],[PL[e.p||'']+(x.mod?' (modifié)':'')])},
+zhd=al=>['Date','Horaire','Événement','Lieu'].concat(al?['Groupe']:[],['Présence']),
+zinfo=D=>{const s=zsum(D);return['Groupe : '+zname(),'Période : du '+fd2($('#zf').value)+' au '+fd2($('#zu').value),'Présents : '+s.p+' | Absents : '+s.a+' | Non renseignés : '+s.n+(s.t==null?'':' | Taux : '+s.t+' %')]},
+zleg='Fond jaune : nouveau ou modifié depuis le dernier rapport',
+zfn=ext=>'rapport_presence_'+zname().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w]+/g,'_')+'_'+$('#zf').value+'_'+$('#zu').value+'.'+ext;
+function zxlsx(D){const al=zg()=='all',hd=zhd(al),X='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',rows=[];let r=1;
+const cell=(c,v,st)=>'<c r="'+String.fromCharCode(65+c)+r+'" t="inlineStr"'+(st?' s="'+st+'"':'')+'><is><t xml:space="preserve">'+zx(v)+'</t></is></c>',row=a=>{rows.push('<row r="'+r+'">'+a.join('')+'</row>');r++};
+row([cell(0,'Rapport de présence',3)]);zinfo(D).forEach(t=>row([cell(0,t)]));if(D.some(x=>x.mod))row([cell(0,zleg,2)]);r++;
+row(hd.map((h,i)=>cell(i,h,1)));D.forEach(x=>row(zvals(x,al).map((v,i)=>cell(i,v,x.mod?2:0))));
+const wd=al?[20,12,34,24,22,22]:[20,12,40,28,22],H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+return zzip([['[Content_Types].xml',H+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+['_rels/.rels',H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+['xl/workbook.xml',H+'<workbook '+X+' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Présence" sheetId="1" r:id="rId1"/></sheets></workbook>'],
+['xl/_rels/workbook.xml.rels',H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+['xl/styles.xml',H+'<styleSheet '+X+'><fonts count="3"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Arial"/></font><font><b/><sz val="14"/><name val="Arial"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF2F5BEA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF176"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
+['xl/worksheets/sheet1.xml',H+'<worksheet '+X+'><cols>'+wd.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols><sheetData>'+rows.join('')+'</sheetData></worksheet>']])}
+function zpe(t){const m={'–':150,'—':151,'’':146,'‘':145,'“':147,'”':148,'…':133,'€':128,'•':149,'œ':156,'Œ':140};let o='';for(const ch of String(t)){const c=ch.charCodeAt(0);o+=m[ch]?String.fromCharCode(m[ch]):(c>=32&&c<=126)||(c>=160&&c<=255)?ch:'?'}return o.replace(/[\\()]/g,'\\$&')}
+function zwr(t,w,sz){const mx=Math.max(1,Math.floor(w/(sz*.52))),out=[];String(t).split('\n').forEach(par=>{let l='';par.split(' ').forEach(wd=>{while(wd.length>mx){if(l){out.push(l);l=''}out.push(wd.slice(0,mx));wd=wd.slice(mx)}const c=l?l+' '+wd:wd;if(c.length>mx){out.push(l);l=wd}else l=c});out.push(l)});return out}
+function zpdf(D){const al=zg()=='all',hd=zhd(al),W=595,H=842,M=40,sz=9,ld=11.5,cw=al?[74,58,125,90,78,90]:[80,62,180,113,80],pg=[];let c='',y=H-M;
+const f1=n=>n.toFixed(1),tx=(t,x,yy,f,z,col)=>{c+='BT /'+f+' '+z+' Tf '+(col||'0 g')+' '+f1(x)+' '+f1(yy)+' Td ('+zpe(t)+') Tj ET\n'},rc=(x,yy,w,h,rgb)=>{c+=rgb+' rg '+f1(x)+' '+f1(yy)+' '+f1(w)+' '+f1(h)+' re f\n'},
+np=()=>{if(c)pg.push(c);c='';y=H-M},hdr=()=>{rc(M,y-14,515,16,'0.184 0.357 0.918');let x=M;hd.forEach((h,i)=>{tx(h,x+3,y-10,'F2',sz,'1 g');x+=cw[i]});y-=16};
+tx('Rapport de présence',M,y-14,'F2',16);y-=26;zinfo(D).forEach(t=>{tx(t,M,y-10,'F1',10);y-=14});
+if(D.some(x=>x.mod)){rc(M,y-12,14,10,'1 0.945 0.463');tx(zleg,M+20,y-10,'F1',9);y-=16}y-=6;hdr();
+if(!D.length){tx('Aucun événement sur cette période.',M+3,y-12,'F1',sz)}
+D.forEach(x=>{const ls=zvals(x,al).map((t,i)=>zwr(t,cw[i]-6,sz)),h=Math.max(...ls.map(a=>a.length))*ld+4;if(y-h<M+20){np();hdr()}
+if(x.mod)rc(M,y-h,515,h,'1 0.945 0.463');let xx=M;ls.forEach((a,i)=>{a.forEach((t,k)=>tx(t,xx+3,y-ld*(k+1)+2.5,'F1',sz));xx+=cw[i]});y-=h;c+='0.8 G 0.5 w '+M+' '+f1(y)+' m '+(W-M)+' '+f1(y)+' l S\n'});
+pg.push(c);const N=pg.length,ob=[];ob[1]='<</Type/Catalog/Pages 2 0 R>>';ob[2]='<</Type/Pages/Kids['+pg.map((_,i)=>(5+2*i)+' 0 R').join(' ')+']/Count '+N+'>>';
+ob[3]='<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>';ob[4]='<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>';
+pg.forEach((s,i)=>{s+='BT /F1 8 Tf 0.4 g '+f1(W/2-22)+' 22 Td (Page '+(i+1)+' / '+N+') Tj ET\n';ob[5+2*i]='<</Type/Page/Parent 2 0 R/MediaBox[0 0 '+W+' '+H+']/Resources<</Font<</F1 3 0 R/F2 4 0 R>>>>/Contents '+(6+2*i)+' 0 R>>';ob[6+2*i]='<</Length '+s.length+'>>\nstream\n'+s+'endstream'});
+let o='%PDF-1.4\n';const of=[];for(let i=1;i<ob.length;i++){of[i]=o.length;o+=i+' 0 obj\n'+ob[i]+'\nendobj\n'}
+const xr=o.length;o+='xref\n0 '+ob.length+'\n0000000000 65535 f \n'+of.slice(1).map(v=>String(v).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<</Size '+ob.length+'/Root 1 0 R>>\nstartxref\n'+xr+'\n%%EOF';
+const u=new Uint8Array(o.length);for(let i=0;i<o.length;i++)u[i]=o.charCodeAt(i)&255;return u}
+async function zshare(n,b,ty){const fl=new File([b],n,{type:ty});try{if(navigator.canShare&&navigator.canShare({files:[fl]})){await navigator.share({files:[fl],title:'Rapport de présence'});return}}catch(e){if(e&&e.name=='AbortError')return}dl(n,b,ty)}
+$('#zh').onclick=()=>{if(!zok())return;const b=zxlsx(zdata());zsave();zshare(zfn('xlsx'),b,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')};
+$('#zp').onclick=()=>{if(!zok())return;const b=zpdf(zdata());zsave();zshare(zfn('pdf'),b,'application/pdf')};
 $('#zr').onclick=()=>{if(S.rp&&S.rp[zg()]&&confirm('Oublier le rapport précédent pour ce choix ?')){delete S.rp[zg()];save();ZL();ZR()}};
 
 let PK='o';
@@ -356,5 +399,10 @@ return'Rapport de présence du '+fd(a)+' au '+fd(b)+'\n\n'+Object.entries(m).map
 $('#rpw').onclick=()=>{const r=RP();if(!r)return;const ph=(S.ab||[]).filter(c=>c.s&&c.t).map(c=>c.t);rmark(r.rows);
 if(ph.length>1)toast('Plusieurs destinataires : choisissez-les dans WhatsApp');go('https://wa.me/'+(ph.length==1?ph[0]:'')+'?text='+encodeURIComponent(rwtext(r.a,r.b,r.rows)),1)};
 
+var LP=null;
+function lps(){LP={};S.e.forEach(e=>LP[e.id]=e.p||'')}
+function sendP(g,e){try{fetch(g.w,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({t:g.k||'',d:e.d,s:e.s||'',n:e.t,p:e.p||''})}).catch(()=>{})}catch(x){}}
+function pushP(){if(!LP)return;S.e.forEach(e=>{const p=e.p||'';if((LP[e.id]||'')===p)return;LP[e.id]=p;const g=S.g.find(x=>x.id==e.g);if(g&&g.w&&/^https:\/\//.test(g.w))sendP(g,e)})}
+lps();
 R();
 </script></body></html>
